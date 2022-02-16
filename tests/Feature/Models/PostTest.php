@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Models;
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
@@ -39,5 +40,12 @@ class PostTest extends TestCase
         $this->assertTrue($post->tags->first() instanceof Tag);
     }
 
+    public function test_post_relation_with_comment()
+    {
+        $count = rand(1,9);
+        $post = Post::factory()->hasComments($count)->create();
 
+        $this->assertCount($count , $post->comments);
+        $this->assertTrue($post->comments->first() instanceof Comment);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Models;
 
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,5 +19,14 @@ class UserTest extends TestCase
 
         $this->assertDatabaseCount('users' , 1);
         $this->assertDatabaseHas('users' , [ 'name' => $data['name']]);
+    }
+
+    public function test_user_relation_with_post()
+    {
+        $count = rand(1,10);
+        $user = User::factory()->has(Post::factory()->count($count))->create();
+
+        $this->assertCount($count, $user->posts);
+        $this->assertTrue($user->posts->first() instanceof Post);
     }
 }

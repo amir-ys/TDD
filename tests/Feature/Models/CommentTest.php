@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class CommentTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase ,ModelHelperTesting;
 
     public function model()
     {

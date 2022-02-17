@@ -13,13 +13,9 @@ class CommentTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_insert_data()
+    public function model()
     {
-        $data =  Comment::factory()->make()->toArray();
-
-        Comment::create($data);
-
-        $this->assertDatabaseCount( 'comments',1 );
+        return new Comment();
     }
 
     public function test_comment_relation_with_post()

@@ -6,20 +6,16 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use tests\Feature\Models\ModelHelperTesting;
 use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase ,ModelHelperTesting;
 
-    public function test_insert_data()
+    public function model()
     {
-        $data = User::factory()->make()->toArray();
-        $data['password'] = 12345;
-        User::create($data);
-
-        $this->assertDatabaseCount('users' , 1);
-        $this->assertDatabaseHas('users' , [ 'name' => $data['name']]);
+        return new User();
     }
 
     public function test_user_relation_with_post()

@@ -12,17 +12,12 @@ use Tests\TestCase;
 
 class PostTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase , ModelHelperTesting;
 
-    public function test_insert_data()
+    public function model()
     {
-       $data =  Post::factory()->make()->toArray();
-
-       Post::create($data);
-
-       $this->assertDatabaseCount( 'posts',1 );
+        return new Post();
     }
-
     public function test_post_relation_with_user()
     {
         $post = Post::factory()->for(User::factory())->create();
@@ -48,4 +43,5 @@ class PostTest extends TestCase
         $this->assertCount($count , $post->comments);
         $this->assertTrue($post->comments->first() instanceof Comment);
     }
+
 }

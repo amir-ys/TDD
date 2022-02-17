@@ -10,15 +10,11 @@ use Tests\TestCase;
 
 class TagTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase ,ModelHelperTesting;
 
-    public function test_insert_data()
+    public function model()
     {
-        $data =  Tag::factory()->make()->toArray();
-
-        Tag::create($data);
-
-        $this->assertDatabaseCount( 'tags',1 );
+        return new Tag();
     }
 
     public function test_tag_relation_with_post()

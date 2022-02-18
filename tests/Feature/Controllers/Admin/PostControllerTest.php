@@ -10,6 +10,7 @@ use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_index_method()
     {
         $response =$this->get(route('admin.posts.index'));

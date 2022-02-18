@@ -30,15 +30,29 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Indicate that the model's  type should be user.
      *
      * @return static
      */
-    public function unverified()
+    public function user()
     {
         return $this->state(function (array $attributes) {
             return [
-                'email_verified_at' => null,
+                'type' => 'user',
+            ];
+        });
+    }
+
+    /**
+     * Indicate that the model's  type should be admin.
+     *
+     * @return static
+     */
+    public function admin()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type' => 'admin',
             ];
         });
     }

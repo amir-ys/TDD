@@ -16,4 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('home' , [HomeController::class , 'index'])->name('home');
-Route::get('single/{postId}' , [SingleController::class , 'index'])->name('single');
+Route::get('single/{id}' , [SingleController::class , 'index'])->name('single');
+Route::post('single/{id}/comment' , [SingleController::class , 'commentStore'])->name('single.comment');
+
+Auth::routes();
+

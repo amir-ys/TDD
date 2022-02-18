@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -25,5 +26,22 @@ class SingleControllerTest extends TestCase
         $response->assertViewIs('single');
 //        $response->assertViewHas('post' ,  $post );
 //        $response->assertViewHas('comments' ,  $post->comments()->latest()->paginate() );
+    }
+
+    public function test_comment_store_when_user_is_loggedin()
+    {
+        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+        $data = Comment::factory()->state(
+            ['user_id' => $user->id , 'commentable_id' => $post->id ]
+        )->make()->toArray();
+
+        $response = $this->actingAs($user)
+            ->post(route('single.comment' , $post) , ['text' => $data['text'] ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseCount('comments' , 1);
+        $this->assertDatabaseHas('comments' , ['text' => $data['text']]);
     }
 }

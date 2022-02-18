@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class SingleController extends Controller
@@ -14,5 +11,14 @@ class SingleController extends Controller
     {
         $comments = $post->comments()->latest()->paginate(15);
         return view('single' , compact('post' , 'comments'));
+    }
+
+    public function commentStore(Request $request ,Post $post)
+    {
+        $post->comments()->create([
+            'user_id' => auth()->id() ,
+            'text' => $request->text ,
+         ]);
+        return redirect()->route('home');
     }
 }

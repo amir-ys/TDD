@@ -2,6 +2,7 @@
 
 namespace tests\Feature\Models;
 
+use App\Models\Comment;
 use App\Models\User;
 
 trait ModelHelperTesting
@@ -16,6 +17,7 @@ trait ModelHelperTesting
         $this->model()::create($data);
 
         $this->assertDatabaseCount( $this->model()->getTable() ,1 );
+        $this->assertDatabaseHas( $this->model()->getTable() ,$data );
     }
 
     abstract public function model();

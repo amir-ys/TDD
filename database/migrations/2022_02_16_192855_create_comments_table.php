@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->text('text');
             $table->foreignId('user_id');
-            $table->foreignId('commentable_id');
+            $table->foreignId('commentable_id')->nullable();
             $table->string( 'commentable_type');
             $table->timestamps();
         });

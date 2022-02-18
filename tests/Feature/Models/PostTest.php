@@ -23,7 +23,7 @@ class PostTest extends TestCase
         $post = Post::factory()->for(User::factory())->create();
 
         $this->assertTrue(isset($post->user->id));
-        $this->assertTrue($post->user instanceof User);
+        $this->assertInstanceOf(User::class ,$post->user);
     }
 
     public function test_post_relation_with_tag()

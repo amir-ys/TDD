@@ -33,15 +33,34 @@ class SingleControllerTest extends TestCase
         $this->withoutExceptionHandling();
         $user = User::factory()->create();
         $post = Post::factory()->create();
-        $data = Comment::factory()->state(
-            ['user_id' => $user->id , 'commentable_id' => $post->id ]
-        )->make()->toArray();
+        $data = Comment::factory()->state(['user_id' => $user->id , 'commentable_id' => $post->id ])
+            ->make()->toArray();
 
         $response = $this->actingAs($user)
-            ->post(route('single.comment' , $post) , ['text' => $data['text'] ]);
+            ->withHeaders(['HTTP_X-Requested-With' => 'XMLHttpRequest'])
+            ->postJson(route('single.comment' , $post->id) , ['text' => $data['text'] ]);
 
-        $response->assertRedirect();
+        $response->assertCreated();
+        $response->assertJson([
+           'created' => true
+        ]);
         $this->assertDatabaseCount('comments' , 1);
-        $this->assertDatabaseHas('comments' , ['text' => $data['text']]);
+        $this->assertDatabaseHas('comments' , $data);
+    }
+
+    public function test_comment_can_not_store_when_user_is_not_loggedin()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+        $data = Comment::factory()->state(['user_id' => $user->id , 'commentable_id' => $post->id ])
+            ->make()->toArray();
+
+        $response = $this->withHeaders(['HTTP_X-Requested-With' => 'XMLHttpRequest'])
+            ->postJson(route('single.comment' , $post) , ['text' => $data['text'] ]);
+
+
+        $response->assertUnauthorized();
+        $this->assertDatabaseCount('comments' , 0);
+        $this->assertDatabaseMissing('comments' , $data);
     }
 }

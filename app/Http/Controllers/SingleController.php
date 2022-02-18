@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SingleController extends Controller
 {
@@ -19,6 +21,8 @@ class SingleController extends Controller
             'user_id' => auth()->id() ,
             'text' => $request->text ,
          ]);
-        return redirect()->route('home');
+        return response([
+            'created' => true
+        ] , ResponseAlias::HTTP_CREATED);
     }
 }

@@ -17,7 +17,7 @@ trait ModelHelperTesting
         $this->model()::create($data);
 
         $this->assertDatabaseCount( $this->model()->getTable() ,1 );
-        $this->assertDatabaseHas( $this->model()->getTable() ,$data );
+        $this->assertDatabaseHas( $this->model()->getTable() , $data );
     }
 
     abstract public function model();

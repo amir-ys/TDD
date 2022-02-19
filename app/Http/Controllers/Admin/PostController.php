@@ -35,11 +35,22 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        //create post
+       $post =  auth()->user()->posts()->create([
+           'title' => $request->title ,
+           'description' => $request->description ,
+           'image' => $request->image ,
+        ]);
+
+        //attach tags to post
+        $post->tags()->attach($request->tag_ids);
+
+        //successfully message to user
+        //redirect to post.index page
+        return redirect()->route('admin.posts.index')->with(['message' =>  'post created successfully']);
     }
 
     /**

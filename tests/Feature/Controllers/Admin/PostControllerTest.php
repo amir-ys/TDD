@@ -55,4 +55,23 @@ class PostControllerTest extends TestCase
 
         $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
     }
+
+    public function test_store_method()
+    {
+        $user = User::factory()->admin()->create();
+        $data = Post::factory()->state(['user_id' => $user->id])->make()->toArray();
+        $tags = Tag::factory()->count(rand(1,5))->create();
+
+        $response = $this->actingAs($user)
+            ->post(route('admin.posts.store') ,
+                array_merge($data , [ 'tag_ids' => $tags->pluck('id')->toArray() ]));
+
+        $response->assertRedirect(route('admin.posts.index'));
+        $response->assertSessionHas('message' , 'post created successfully');
+        $this->assertDatabaseHas('posts' , $data);
+        $this->assertEquals(
+            Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
+            $tags->pluck('id')->toArray()
+        );
+    }
 }

@@ -23,7 +23,7 @@ class PostControllerTest extends TestCase
         $response->assertViewIs('admins.posts.index');
         $response->assertViewHas('posts' , Post::latest()->paginate());
 
-        $this->assertEquals( ['web', 'admin'], request()->route()->middleware());
+        $this->assertEquals( $this->middlewares, request()->route()->middleware());
     }
 
     public function test_create_method()
@@ -39,7 +39,7 @@ class PostControllerTest extends TestCase
             'tags' => Tag::latest()->paginate() ,
         ]);
 
-        $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
+        $this->assertEquals( $this->middlewares, request()->route()->middleware());
     }
 
     public function test_edit_method()
@@ -55,7 +55,7 @@ class PostControllerTest extends TestCase
             'post' => $post,  'tags' => Tag::latest()->paginate() ,
             ]);
 
-        $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
+        $this->assertEquals( $this->middlewares, request()->route()->middleware());
     }
 
     public function test_store_method()
@@ -76,7 +76,7 @@ class PostControllerTest extends TestCase
             Post::query()->where($data)->first()->tags()->pluck('id')->toArray()
         );
 
-        $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
+        $this->assertEquals( $this->middlewares, request()->route()->middleware());
     }
 
     public function test_update_method()
@@ -97,8 +97,6 @@ class PostControllerTest extends TestCase
             $tags->pluck('id')->toArray() ,
             Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
         );
-
-        $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
     }
 
     public function test_validation_request_post_data_has_required()
@@ -118,7 +116,6 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
-
     }
 
     public function test_validation_request_description_field_in_post_data_has_min()
@@ -176,6 +173,7 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
+
     }
 
     public function test_destroy_method()
@@ -191,5 +189,7 @@ class PostControllerTest extends TestCase
         $this->assertDatabaseMissing('posts' , $post->toArray());
         $this->assertCount(0, $post->comments);
         $this->assertEmpty($post->tags);
+
+        $this->assertEquals( $this->middlewares, request()->route()->middleware());
     }
 }

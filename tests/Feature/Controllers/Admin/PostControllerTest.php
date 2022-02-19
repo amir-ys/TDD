@@ -11,6 +11,7 @@ use Tests\TestCase;
 class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
+    protected array $middlewares = ['web', 'admin'];
     public function test_index_method()
     {
         $this->actingAs(User::factory()->admin()->create());
@@ -73,5 +74,29 @@ class PostControllerTest extends TestCase
             Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
             $tags->pluck('id')->toArray()
         );
+
+        $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
+    }
+
+    public function test_update_method()
+    {
+        $user = User::factory()->admin()->create();
+        $data = Post::factory()->state(['user_id' => $user->id])->make()->toArray();
+        $tags = Tag::factory()->count(rand(1,5))->create();
+        $post = Post::factory()->state(['user_id' => $user->id])->create();
+
+        $response = $this->actingAs($user)
+            ->patch(route('admin.posts.update' , $post->id) ,
+                array_merge($data , [ 'tag_ids' => $tags->pluck('id')->toArray() ]));
+
+        $response->assertRedirect(route('admin.posts.index'));
+        $response->assertSessionHas('message' , 'post updated successfully');
+        $this->assertDatabaseHas('posts' , array_merge($data , ['id' => $post->id]));
+        $this->assertEquals(
+            Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
+            $tags->pluck('id')->toArray()
+        );
+
+        $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
     }
 }

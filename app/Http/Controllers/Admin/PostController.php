@@ -70,11 +70,21 @@ class PostController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+         $post->update([
+            'title' => $request->title ,
+            'description' => $request->description ,
+            'image' => $request->image ,
+        ]);
+
+        //sync tags to post
+        $post->tags()->sync($request->tag_ids);
+
+        //successfully message to user
+        //redirect to post.index page
+        return redirect()->route('admin.posts.index')->with(['message' =>  'post updated successfully']);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers\Admin;
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
@@ -175,5 +176,20 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
+    }
+
+    public function test_destroy_method()
+    {
+        $user = User::factory()->admin()->create();
+        $post = Post::factory()->hasTags(5)->hasComments(20)->create();
+        $this->actingAs($user);
+
+        $response = $this->delete(route('admin.posts.destroy' , $post->id));
+
+        $response->assertRedirect(route('admin.posts.index'))
+        ->assertSessionHas('message' , 'post deleted successfully');
+        $this->assertDatabaseMissing('posts' , $post->toArray());
+        $this->assertCount(0, $post->comments);
+        $this->assertEmpty($post->tags);
     }
 }

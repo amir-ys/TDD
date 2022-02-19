@@ -57,7 +57,8 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Post $post
+
      * @return \Illuminate\Http\Response
      */
     public function edit(Post $post)
@@ -70,7 +71,8 @@ class PostController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Post $post
+
      */
     public function update(PostRequest $request, Post $post)
     {
@@ -91,11 +93,21 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Post $post
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        //detach tags
+        $post->tags()->detach();
+
+        //delete post comments
+        $post->comments()->delete();
+
+        //delete post
+        $post->delete();
+
+        //redirect user with success message
+        return redirect()->route('admin.posts.index')
+            ->with(['message' => 'post deleted successfully']);
     }
 }

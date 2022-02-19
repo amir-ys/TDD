@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PostRequest;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class PostController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
         //create post
        $post =  auth()->user()->posts()->create([
@@ -71,7 +72,7 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      */
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post)
     {
          $post->update([
             'title' => $request->title ,

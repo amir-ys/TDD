@@ -71,8 +71,8 @@ class PostControllerTest extends TestCase
         $response->assertSessionHas('message' , 'post created successfully');
         $this->assertDatabaseHas('posts' , $data);
         $this->assertEquals(
-            Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
-            $tags->pluck('id')->toArray()
+            $tags->pluck('id')->toArray() ,
+            Post::query()->where($data)->first()->tags()->pluck('id')->toArray()
         );
 
         $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
@@ -93,10 +93,87 @@ class PostControllerTest extends TestCase
         $response->assertSessionHas('message' , 'post updated successfully');
         $this->assertDatabaseHas('posts' , array_merge($data , ['id' => $post->id]));
         $this->assertEquals(
+            $tags->pluck('id')->toArray() ,
             Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
-            $tags->pluck('id')->toArray()
         );
 
         $this->assertEquals(['web' , 'admin'], request()->route()->middleware());
+    }
+
+    public function test_validation_request_post_data_has_required()
+    {
+        $user = User::factory()->admin()->create();
+        $data = [];
+        $errors = [
+            'title' =>  'The title field is required.',
+            'description' =>  'The description field is required.',
+            'image' =>  'The image field is required.',
+            'tag_ids' =>  'The tag ids field is required.',
+        ];
+
+
+        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+        ->assertSessionHasErrors($errors);
+
+        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+            ->assertSessionHasErrors($errors);
+
+    }
+
+    public function test_validation_request_description_field_in_post_data_has_min()
+    {
+        $user = User::factory()->admin()->create();
+        $data = [ 'description' => 'lord' ];
+        $errors = [
+            'description' =>  'The description must be at least 5 characters.',
+        ];
+
+        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+            ->assertSessionHasErrors($errors);
+
+        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+            ->assertSessionHasErrors($errors);
+    }
+
+    public function test_validation_request_image_field_in_post_data_has_url()
+    {
+        $user = User::factory()->admin()->create();
+        $data = [ 'image' => 'lord' ];
+        $errors = [
+            'image' =>  'The image must be a valid URL.',
+        ];
+
+        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+            ->assertSessionHasErrors($errors);
+
+        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+            ->assertSessionHasErrors($errors);
+    }
+
+    public function test_validation_request_tags_field_in_post_data_exits_in_tag_table()
+    {
+        $user = User::factory()->admin()->create();
+        $data = [ 'tag_ids' => 'lord' ];
+        $errors = [
+            'tag_ids' =>  'The tag ids must be an array.',
+        ];
+
+        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+            ->assertSessionHasErrors($errors);
+
+        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+            ->assertSessionHasErrors($errors);
+
+        $user = User::factory()->admin()->create();
+        $data = [ 'tag_ids' => [0] ];
+        $errors = [
+            'tag_ids.0' => 'The selected tag_ids.0 is invalid.',
+        ];
+
+        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+            ->assertSessionHasErrors($errors);
+
+        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+            ->assertSessionHasErrors($errors);
     }
 }

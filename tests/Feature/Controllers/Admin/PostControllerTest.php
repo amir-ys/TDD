@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers\Admin;
 
+use App\Helpers\DurationOfReading;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Tag;
@@ -189,6 +190,14 @@ class PostControllerTest extends TestCase
         $this->assertEmpty($post->tags);
 
         $this->checkRequestMiddlewares();
+    }
+
+    public function test_get_duration_of_reading_attribute()
+    {
+        $post = Post::factory()->make();
+        $dor = (new DurationOfReading($post->description))->getDurationPerSeconds();
+
+        $this->assertEquals( $post->readingDuration , $dor);
     }
 
     private function actingAsAdmin(){

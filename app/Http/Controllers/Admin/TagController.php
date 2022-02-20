@@ -7,6 +7,7 @@ use App\Models\tag;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
@@ -36,11 +37,13 @@ class TagController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        Tag::create(['name' => $request->name]);
+        return redirect()->route('admin.tags.index')
+            ->with(['message' => 'tag created successfully']);
     }
 
 
@@ -48,9 +51,9 @@ class TagController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\tag  $tag
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function edit(tag $tag)
+    public function edit(tag $tag): View|Factory|Application
     {
         return view('admins.tags.edit' , compact('tag'));
 
@@ -61,21 +64,27 @@ class TagController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\tag  $tag
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function update(Request $request, tag $tag)
+    public function update(Request $request, tag $tag): RedirectResponse
     {
-        //
+        $tag->update([
+           'name' => $request->name
+        ]);
+        return redirect()->route('admin.tags.index')
+            ->with(['message' => 'tag updated successfully']);
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\tag  $tag
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function destroy(tag $tag)
+    public function destroy(tag $tag): RedirectResponse
     {
-        //
-    }
+        $tag->delete();
+        return redirect()->route('admin.tags.index')
+            ->with(['message' => 'tag deleted successfully']);    }
 }

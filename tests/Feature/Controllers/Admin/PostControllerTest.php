@@ -12,7 +12,7 @@ use Tests\TestCase;
 class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
-    protected array $middlewares = ['web', 'admin'];
+    protected array $middlewares = ['web', 'auth' ,'admin'  ];
     public function test_index_method()
     {
         $this->actingAs(User::factory()->admin()->create());

@@ -19,13 +19,14 @@ class SingleControllerTest extends TestCase
      */
     public function test_index_method()
     {
-        $post = Post::factory()->has(Comment::factory()->count(rand(1,3)))->create();
+        $count = rand(1,10);
+        $post = Post::factory()->has(Comment::factory()->count($count))->create();
         $response = $this->get(route('single' , $post->id));
 
         $response->assertOk();
         $response->assertViewIs('single');
-//        $response->assertViewHas('post' ,  $post );
-//        $response->assertViewHas('comments' ,  $post->comments()->latest()->paginate() );
+        $response->assertViewHas('post' ,  $post );
+        $response->assertViewHas('comments' ,  $post->comments()->latest()->paginate(15) );
     }
 
     public function test_comment_store_when_user_is_loggedin()

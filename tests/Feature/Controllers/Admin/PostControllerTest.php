@@ -8,6 +8,8 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery\ExpectationInterface;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class PostControllerTest extends TestCase
@@ -195,7 +197,7 @@ class PostControllerTest extends TestCase
     public function test_get_duration_of_reading_attribute()
     {
         $post = Post::factory()->make();
-        $dor = (new DurationOfReading($post->description))->getDurationPerSeconds();
+        $dor = (new DurationOfReading())->setText($post->description)->getDurationPerMinutes();
 
         $this->assertEquals( $post->readingDuration , $dor);
     }

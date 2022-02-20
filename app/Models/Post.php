@@ -32,7 +32,7 @@ class Post extends Model
     {
         return new Attribute(
             get: fn ($value) =>
-            $dor = (new DurationOfReading($this->description))->getDurationPerSeconds()
+             (new DurationOfReading())->setText($this->description)->getDurationPerMinutes()
         );
     }
 }

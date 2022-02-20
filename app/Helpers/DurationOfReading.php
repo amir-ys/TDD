@@ -6,11 +6,13 @@ class DurationOfReading
 {
     private int $wordPerSeconds  = 1;
     private int $wordLength;
-    private int|float $duration;
-    public function __construct($text)
+    private int $duration;
+
+    public function setText($text)
     {
         $this->wordLength = count(explode(' ' , $text));
         $this->duration = $this->wordLength * $this->wordPerSeconds ;
+        return $this;
     }
 
     public function getDurationPerSeconds(): float|int

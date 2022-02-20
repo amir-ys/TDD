@@ -22,7 +22,7 @@ class TagControllerTest extends TestCase
             ->assertViewIs('admins.tags.index')
             ->assertViewHas('tags' , Tag::latest()->paginate());
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_create_method()
@@ -33,7 +33,7 @@ class TagControllerTest extends TestCase
         $response->assertOk()
             ->assertViewIs('admins.tags.create');
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_edit_method()
@@ -46,7 +46,7 @@ class TagControllerTest extends TestCase
             ->assertViewIs('admins.tags.edit')
             ->assertViewHas('tag' , $tag);
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_store_method()
@@ -60,7 +60,7 @@ class TagControllerTest extends TestCase
             ->assertSessionHas('message' , 'tag created successfully');
         $this->assertDatabaseHas('tags' , $data);
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_update_method()
@@ -92,5 +92,10 @@ class TagControllerTest extends TestCase
     private function actingAsAdmin()
     {
         return $this->actingAs(User::factory()->admin()->create());
+    }
+
+    private function checkRequestMiddlewares(): void
+    {
+        $this->assertEquals($this->middlewares, request()->route()->middleware());
     }
 }

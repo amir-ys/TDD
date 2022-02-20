@@ -15,20 +15,19 @@ class PostControllerTest extends TestCase
     protected array $middlewares = ['web', 'auth' ,'admin'  ];
     public function test_index_method()
     {
-        $this->actingAs(User::factory()->admin()->create());
-
+        $this->actingAsAdmin();
         $response =$this->get(route('admin.posts.index'));
 
         $response->assertOk();
         $response->assertViewIs('admins.posts.index');
         $response->assertViewHas('posts' , Post::latest()->paginate());
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_create_method()
     {
-        $this->actingAs(User::factory()->admin()->create());
+        $this->actingAsAdmin();
 
         $post =Post::factory()->create();
         $response =$this->get(route('admin.posts.create'));
@@ -39,12 +38,12 @@ class PostControllerTest extends TestCase
             'tags' => Tag::latest()->paginate() ,
         ]);
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_edit_method()
     {
-        $this->actingAs(User::factory()->admin()->create());
+        $this->actingAsAdmin();
 
         $post =Post::factory()->create();
         $response =$this->get(route('admin.posts.edit' , $post->id));
@@ -55,7 +54,7 @@ class PostControllerTest extends TestCase
             'post' => $post,  'tags' => Tag::latest()->paginate() ,
             ]);
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_store_method()
@@ -76,7 +75,7 @@ class PostControllerTest extends TestCase
             Post::query()->where($data)->first()->tags()->pluck('id')->toArray()
         );
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
     }
 
     public function test_update_method()
@@ -101,7 +100,7 @@ class PostControllerTest extends TestCase
 
     public function test_validation_request_post_data_has_required()
     {
-        $user = User::factory()->admin()->create();
+        $this->actingAsAdmin();
         $data = [];
         $errors = [
             'title' =>  'The title field is required.',
@@ -111,76 +110,75 @@ class PostControllerTest extends TestCase
         ];
 
 
-        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+        $this->post(route('admin.posts.store') , $data)
         ->assertSessionHasErrors($errors);
 
-        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+        $this->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
     }
 
     public function test_validation_request_description_field_in_post_data_has_min()
     {
-        $user = User::factory()->admin()->create();
+        $this->actingAsAdmin();
         $data = [ 'description' => 'lord' ];
         $errors = [
             'description' =>  'The description must be at least 5 characters.',
         ];
 
-        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+        $this->post(route('admin.posts.store') , $data)
             ->assertSessionHasErrors($errors);
 
-        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+        $this->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
     }
 
     public function test_validation_request_image_field_in_post_data_has_url()
     {
-        $user = User::factory()->admin()->create();
+        $this->actingAsAdmin();
         $data = [ 'image' => 'lord' ];
         $errors = [
             'image' =>  'The image must be a valid URL.',
         ];
 
-        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+        $this->post(route('admin.posts.store') , $data)
             ->assertSessionHasErrors($errors);
 
-        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+        $this->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
     }
 
     public function test_validation_request_tags_field_in_post_data_exits_in_tag_table()
     {
-        $user = User::factory()->admin()->create();
+        $this->actingAsAdmin();
         $data = [ 'tag_ids' => 'lord' ];
         $errors = [
             'tag_ids' =>  'The tag ids must be an array.',
         ];
 
-        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+        $this->post(route('admin.posts.store') , $data)
             ->assertSessionHasErrors($errors);
 
-        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+        $this->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
 
-        $user = User::factory()->admin()->create();
+        $this->actingAsAdmin();
         $data = [ 'tag_ids' => [0] ];
         $errors = [
             'tag_ids.0' => 'The selected tag_ids.0 is invalid.',
         ];
 
-        $this->actingAs($user)->post(route('admin.posts.store') , $data)
+        $this->post(route('admin.posts.store') , $data)
             ->assertSessionHasErrors($errors);
 
-        $this->actingAs($user)->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
+        $this->post(route('admin.posts.update' , Post::factory()->create()->id) , $data)
             ->assertSessionHasErrors($errors);
 
     }
 
     public function test_destroy_method()
     {
-        $user = User::factory()->admin()->create();
+        $this->actingAsAdmin();
         $post = Post::factory()->hasTags(5)->hasComments(20)->create();
-        $this->actingAs($user);
 
         $response = $this->delete(route('admin.posts.destroy' , $post->id));
 
@@ -190,6 +188,15 @@ class PostControllerTest extends TestCase
         $this->assertCount(0, $post->comments);
         $this->assertEmpty($post->tags);
 
-        $this->assertEquals( $this->middlewares, request()->route()->middleware());
+        $this->checkRequestMiddlewares();
+    }
+
+    private function actingAsAdmin(){
+       return $this->actingAs(User::factory()->admin()->create());
+    }
+
+    private function checkRequestMiddlewares(): void
+    {
+        $this->assertEquals($this->middlewares, request()->route()->middleware());
     }
 }

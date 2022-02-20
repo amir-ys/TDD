@@ -96,6 +96,6 @@ class TagControllerTest extends TestCase
 
     private function checkRequestMiddlewares(): void
     {
-        $this->assertEquals($this->middlewares, request()->route()->middleware());
+        $this->assertEquals(request()->route()->middleware() ,$this->middlewares);
     }
 }

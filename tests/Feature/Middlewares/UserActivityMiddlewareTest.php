@@ -25,11 +25,11 @@ class UserActivityMiddlewareTest extends TestCase
        $response =  $middleware->handle($request , function (){});
 
        $this->assertNull($response);
-       $this->assertEquals('online' , Cache::get("user_{$user->id}_activity"));
+        $this->assertEquals( Cache::get("user_{$user->id}_activity") ,'online');
 
        $this->travel(10 + 1)->seconds();
 
-        $this->assertEquals(null , Cache::get("user_{$user->id}_activity"));
+        $this->assertEquals(Cache::get("user_{$user->id}_activity") , null);
     }
 
     public function test_user_activity_can_not_set_in_cache_when_user_is_not_logged_in()
@@ -52,7 +52,7 @@ class UserActivityMiddlewareTest extends TestCase
 
         $this->get(route('home'));
 
-        $this->assertEquals('online' , Cache::get("user_{$user->id}_activity"));
+        $this->assertEquals( Cache::get("user_{$user->id}_activity") ,'online');
 
     }
 }

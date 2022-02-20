@@ -72,8 +72,8 @@ class PostControllerTest extends TestCase
         $response->assertSessionHas('message' , 'post created successfully');
         $this->assertDatabaseHas('posts' , $data);
         $this->assertEquals(
-            $tags->pluck('id')->toArray() ,
-            Post::query()->where($data)->first()->tags()->pluck('id')->toArray()
+            Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
+            $tags->pluck('id')->toArray()
         );
 
         $this->checkRequestMiddlewares();
@@ -94,8 +94,8 @@ class PostControllerTest extends TestCase
         $response->assertSessionHas('message' , 'post updated successfully');
         $this->assertDatabaseHas('posts' , array_merge($data , ['id' => $post->id]));
         $this->assertEquals(
-            $tags->pluck('id')->toArray() ,
             Post::query()->where($data)->first()->tags()->pluck('id')->toArray() ,
+            $tags->pluck('id')->toArray() ,
         );
     }
 
@@ -206,6 +206,6 @@ class PostControllerTest extends TestCase
 
     private function checkRequestMiddlewares(): void
     {
-        $this->assertEquals($this->middlewares, request()->route()->middleware());
+        $this->assertEquals(request()->route()->middleware() ,$this->middlewares);
     }
 }

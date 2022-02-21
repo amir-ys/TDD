@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
-class checkUserIsAdminMiddlewareTest extends TestCase
+class CheckUserIsAdminMiddlewareTest extends TestCase
 {
     use RefreshDatabase;
     public function test_when_user_is_not_admin()

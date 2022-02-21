@@ -187,7 +187,7 @@ class PostControllerTest extends TestCase
 
         $response->assertRedirect(route('admin.posts.index'))
         ->assertSessionHas('message' , 'post deleted successfully');
-        $this->assertDatabaseMissing('posts' , $post->toArray());
+        $this->assertModelMissing($post);
         $this->assertCount(0, $post->comments);
         $this->assertEmpty($post->tags);
 

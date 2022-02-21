@@ -85,7 +85,7 @@ class TagControllerTest extends TestCase
 
         $response->assertRedirect(route('admin.tags.index'))
             ->assertSessionHas('message' , 'tag deleted successfully');
-        $this->assertDatabaseMissing('tags' , $tag->toArray());
+        $this->assertModelMissing($tag);
         $this->assertDatabaseCount('tags' , 0);
     }
 

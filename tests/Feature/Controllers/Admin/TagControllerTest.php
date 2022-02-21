@@ -89,6 +89,25 @@ class TagControllerTest extends TestCase
         $this->assertDatabaseCount('tags' , 0);
     }
 
+    public function test_validation_request_name_in_tag_data_must_be_required()
+    {
+        $data = [];
+        $this->actingAsAdmin();
+
+        $this->post(route('admin.tags.store') , $data)
+            ->assertSessionHasErrors([
+                'name' => 'The name field is required.'
+            ]);
+
+        $this->actingAsAdmin();
+        $tag = Tag::factory()->create();
+
+        $this->patch(route('admin.tags.update' , $tag->id) , $data)
+            ->assertSessionHasErrors([
+                'name' => 'The name field is required.'
+            ]);
+    }
+
     private function actingAsAdmin()
     {
         return $this->actingAs(User::factory()->admin()->create());
